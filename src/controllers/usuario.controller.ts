@@ -44,7 +44,7 @@ import {
   UserProfileSchema,
 } from './specs/user-controller.specs';
 
-export class UserController {
+export class UsuarioController {
   constructor(
     @repository(UsuarioRepository) public usuarioRepository: UsuarioRepository,
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
@@ -55,7 +55,7 @@ export class UserController {
     public userService: UserService<Usuario, Credentials>,
   ) {}
 
-  @get('/users/count')
+  @get('/usuarios/count')
   @response(200, {
     description: 'Usuario model count',
     content: {'application/json': {schema: CountSchema}},
@@ -69,7 +69,7 @@ export class UserController {
     return this.usuarioRepository.count(where);
   }
 
-  @get('/users')
+  @get('/usuarios')
   @response(200, {
     description: 'Array of Usuario model instances',
     content: {
@@ -92,7 +92,7 @@ export class UserController {
     return this.usuarioRepository.find(filter);
   }
 
-  @patch('/users/{id}')
+  @patch('/usuarios/{id}')
   @response(204, {
     description: 'Usuario PATCH success',
   })
@@ -111,7 +111,38 @@ export class UserController {
     await this.usuarioRepository.updateById(id, user);
   }
 
-  @post('/users/sign-up', {
+  @patch('/usuarios/{id}/change-password')
+  @response(204, {
+    description: 'Usuario PATCH success',
+  })
+  @authenticate('jwt')
+  async updatePasswordById(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['password'],
+            properties: {
+              password: {
+                type: 'string',
+                minLength: 8,
+              },
+            },
+          },
+        },
+      },
+    })
+    data: {password: string},
+  ): Promise<void> {
+    // encrypt the password
+    const password = await this.passwordHasher.hashPassword(data.password);
+
+    await this.usuarioRepository.usuarioCredentials(id).patch({password});
+  }
+
+  @post('/usuarios/sign-up', {
     responses: {
       '200': {
         description: 'Usuario',
@@ -162,7 +193,7 @@ export class UserController {
     }
   }
 
-  @post('/users/sign-up/admin', {
+  @post('/usuarios/sign-up/admin', {
     responses: {
       '200': {
         description: 'Usuario',
@@ -214,7 +245,7 @@ export class UserController {
     }
   }
 
-  @get('/users/{userId}', {
+  @get('/usuarios/{userId}', {
     responses: {
       '200': {
         description: 'Usuario',
@@ -239,7 +270,7 @@ export class UserController {
     return this.usuarioRepository.findById(userId);
   }
 
-  @get('/users/me', {
+  @get('/usuarios/me', {
     responses: {
       '200': {
         description: 'The current user profile',
@@ -260,7 +291,7 @@ export class UserController {
     return this.usuarioRepository.findById(parseInt(userId));
   }
 
-  @post('/users/login', {
+  @post('/usuarios/login', {
     responses: {
       '200': {
         description: 'Token',
