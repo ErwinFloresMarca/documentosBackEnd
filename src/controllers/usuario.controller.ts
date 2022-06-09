@@ -156,12 +156,13 @@ export class UsuarioController {
       },
     },
   })
+  @authenticate('jwt')
   async create(
     @requestBody(CredentialsRequestBody)
     newUserRequest: Credentials,
   ): Promise<Usuario> {
     // por defecto
-    newUserRequest.rol = 'user';
+    if (!newUserRequest.rol) newUserRequest.rol = 'user';
 
     // ensure a valid email value and password value
     validateCredentials(_.pick(newUserRequest, ['usuario', 'password']));
