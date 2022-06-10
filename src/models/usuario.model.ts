@@ -19,6 +19,7 @@ export class Usuario extends TimeStamp {
 
   @property({
     type: 'string',
+    nullable: true,
   })
   paterno: string;
 
@@ -31,12 +32,13 @@ export class Usuario extends TimeStamp {
   @property({
     type: 'string',
     required: true,
-    index: {unique: true},
+    nullable: true,
   })
   ci: string;
 
   @property({
     type: 'string',
+    nullable: true,
   })
   celular: string;
 
@@ -49,12 +51,13 @@ export class Usuario extends TimeStamp {
 
   @property({
     type: 'string',
-    index: {unique: true},
+    nullable: true,
   })
   email: string;
 
   @property({
     type: 'string',
+    nullable: true,
   })
   avatar?: string;
 
