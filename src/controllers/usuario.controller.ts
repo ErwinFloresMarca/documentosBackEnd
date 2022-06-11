@@ -38,6 +38,7 @@ import {
   UsuarioRepository,
 } from '../repositories';
 import {PasswordHasher, validateCredentials} from '../services';
+import Roles from '../utils/roles.util';
 import {
   CredentialsRequestBody,
   LoginRequestBody,
@@ -62,7 +63,7 @@ export class UsuarioController {
   })
   @authenticate('jwt')
   @authorize({
-    allowedRoles: ['admin'],
+    allowedRoles: [Roles.admin],
     voters: [basicAuthorization],
   })
   async count(@param.where(Usuario) where?: Where<Usuario>): Promise<Count> {
@@ -83,7 +84,7 @@ export class UsuarioController {
   })
   @authenticate('jwt')
   @authorize({
-    allowedRoles: ['admin'],
+    allowedRoles: [Roles.admin],
     voters: [basicAuthorization],
   })
   async find(
@@ -114,6 +115,10 @@ export class UsuarioController {
   @patch('/usuarios/{id}/change-password')
   @response(204, {
     description: 'Usuario PATCH success',
+  })
+  @authorize({
+    allowedRoles: [Roles.admin],
+    voters: [basicAuthorization],
   })
   @authenticate('jwt')
   async updatePasswordById(
@@ -157,12 +162,16 @@ export class UsuarioController {
     },
   })
   @authenticate('jwt')
+  @authorize({
+    allowedRoles: [Roles.admin],
+    voters: [basicAuthorization],
+  })
   async create(
     @requestBody(CredentialsRequestBody)
     newUserRequest: Credentials,
   ): Promise<Usuario> {
     // por defecto
-    if (!newUserRequest.rol) newUserRequest.rol = 'user';
+    if (!newUserRequest.rol) newUserRequest.rol = Roles.tecnico;
 
     // ensure a valid email value and password value
     validateCredentials(_.pick(newUserRequest, ['usuario', 'password']));
@@ -223,12 +232,14 @@ export class UsuarioController {
     );
 
     try {
+      const cantUsers = (await this.usuarioRepository.count()).count;
+      if (cantUsers > 0) {
+        throw new Error('Ya existe un usuario administrador.');
+      }
       // create the new user
-      console.log('user: ', newUserRequest);
       const savedUser = await this.usuarioRepository.create(
         _.omit(newUserRequest, 'password') as DataObject<Usuario>,
       );
-      console.log('usuario creado: ', savedUser);
       // set the password
       await this.usuarioRepository
         .usuarioCredentials(savedUser.id)
@@ -237,11 +248,10 @@ export class UsuarioController {
       return savedUser;
     } catch (error) {
       // MongoError 11000 duplicate key
-      console.log('erro al creas usuario: ', error);
       if (error.code === 11000 && error.errmsg.includes('index: uniqueEmail')) {
         throw new HttpErrors.Conflict('Email value is already taken');
       } else {
-        throw error;
+        throw new HttpErrors.Unauthorized(error);
       }
     }
   }
@@ -262,7 +272,7 @@ export class UsuarioController {
   })
   @authenticate('jwt')
   @authorize({
-    allowedRoles: ['admin'],
+    allowedRoles: [Roles.admin],
     voters: [basicAuthorization],
   })
   async findById(

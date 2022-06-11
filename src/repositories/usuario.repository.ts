@@ -2,11 +2,11 @@ import {Getter, inject} from '@loopback/core';
 import {
   DefaultCrudRepository,
   HasOneRepositoryFactory,
-  repository,
-} from '@loopback/repository';
+  repository, HasManyRepositoryFactory} from '@loopback/repository';
 import {MysqlDbDataSource} from '../datasources';
-import {Usuario, UsuarioCredentials, UsuarioRelations} from '../models';
+import {Usuario, UsuarioCredentials, UsuarioRelations, Responsable} from '../models';
 import {UsuarioCredentialsRepository} from './usuario-credentials.repository';
+import {ResponsableRepository} from './responsable.repository';
 
 export type Credentials = {
   nombres?: string;
@@ -35,12 +35,16 @@ export class UsuarioRepository extends DefaultCrudRepository<
     typeof Usuario.prototype.id
   >;
 
+  public readonly responsables: HasManyRepositoryFactory<Responsable, typeof Usuario.prototype.id>;
+
   constructor(
     @inject('datasources.mysqlDb') dataSource: MysqlDbDataSource,
     @repository.getter('UsuarioCredentialsRepository')
-    protected usuarioCredentialsRepositoryGetter: Getter<UsuarioCredentialsRepository>,
+    protected usuarioCredentialsRepositoryGetter: Getter<UsuarioCredentialsRepository>, @repository.getter('ResponsableRepository') protected responsableRepositoryGetter: Getter<ResponsableRepository>,
   ) {
     super(Usuario, dataSource);
+    this.responsables = this.createHasManyRepositoryFactoryFor('responsables', responsableRepositoryGetter,);
+    this.registerInclusionResolver('responsables', this.responsables.inclusionResolver);
     this.usuarioCredentials = this.createHasOneRepositoryFactoryFor(
       'usuarioCredentials',
       usuarioCredentialsRepositoryGetter,

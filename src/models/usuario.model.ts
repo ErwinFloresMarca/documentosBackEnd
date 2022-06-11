@@ -1,6 +1,7 @@
-import {hasOne, model, property} from '@loopback/repository';
+import {hasOne, model, property, hasMany} from '@loopback/repository';
 import {TimeStamp} from './time-stamp.model';
 import {UsuarioCredentials} from './usuario-credentials.model';
+import {Responsable} from './responsable.model';
 
 @model()
 export class Usuario extends TimeStamp {
@@ -68,6 +69,9 @@ export class Usuario extends TimeStamp {
 
   @hasOne(() => UsuarioCredentials)
   usuarioCredentials: UsuarioCredentials;
+
+  @hasMany(() => Responsable)
+  responsables: Responsable[];
 
   constructor(data?: Partial<Usuario>) {
     super(data);
