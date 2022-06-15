@@ -5,3 +5,4 @@ export * from './usuario-responsable.controller';
 export * from './responsable-usuario.controller';
 export * from './area-responsable.controller';
 export * from './responsable-area.controller';
+export * from './area.controller';

@@ -32,3 +32,11 @@ export namespace UserServiceBindings {
     UserService<Usuario, Credentials>
   >('services.user.service');
 }
+
+// file service
+
+import {FileUploadHandler} from './types'; // Binding key for the file upload service
+export const FILE_UPLOAD_SERVICE = BindingKey.create<FileUploadHandler>(
+  'services.FileUpload',
+); // Binding key for the storage directory
+export const STORAGE_DIRECTORY = BindingKey.create<string>('storage.directory');
