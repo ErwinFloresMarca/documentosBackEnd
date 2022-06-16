@@ -19,7 +19,7 @@ import {
   response,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Area} from '../models';
+import {Area, ManyToMany, Responsable, TipoCartas} from '../models';
 import {AreaRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 
@@ -134,5 +134,111 @@ export class AreaController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.areaRepository.deleteById(id);
+  }
+
+  // relación con responsable
+  @get('/areas/{id}/responsables', {
+    responses: {
+      '200': {
+        description: 'Array of Area has many Responsable',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(Responsable)},
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  async findResponsables(
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<Responsable>,
+  ): Promise<Responsable[]> {
+    return this.areaRepository.responsables(id).find(filter);
+  }
+
+  // relacion muchos a muchos con tipo cartas
+  @get('/areas/{id}/tipo-cartas', {
+    responses: {
+      '200': {
+        description: 'Array of Area has many TipoCartas through AreaTipoCarta',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(TipoCartas)},
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  async findTipoCartas(
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<TipoCartas>,
+  ): Promise<TipoCartas[]> {
+    return this.areaRepository.tipoCartas(id).find(filter);
+  }
+
+  @post('/areas/tipo-cartas/links', {
+    responses: {
+      '200': {
+        description: 'crear relación',
+        content: {
+          'application/json': {
+            schema: {
+              title: 'ids of link tipo cartas',
+              type: 'number[]',
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  @authorize({
+    allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
+    voters: [basicAuthorization],
+  })
+  async linkTipoCarta(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ManyToMany, {
+            title: 'ManyToManySchema',
+          }),
+        },
+      },
+    })
+    data: ManyToMany,
+  ): Promise<Array<number | undefined>> {
+    if (data.link)
+      await this.areaRepository.tipoCartas(data.id).link(data.relationId);
+    else await this.areaRepository.tipoCartas(data.id).unlink(data.relationId);
+    return (
+      await this.areaRepository.tipoCartas(data.id).find({fields: {id: true}})
+    ).map(tp => tp.id);
+  }
+
+  @get('/areas/{id}/tipo-cartas/links', {
+    responses: {
+      '200': {
+        description: 'lista ids relacionados tipo cartas',
+        content: {
+          'application/json': {
+            schema: {
+              title: 'ids of link tipo cartas',
+              type: 'number[]',
+            },
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  async getLinkTipoCarta(
+    @param.path.number('id') id: number,
+  ): Promise<Array<number | undefined>> {
+    return (
+      await this.areaRepository.tipoCartas(id).find({fields: {id: true}})
+    ).map(tp => tp.id);
   }
 }

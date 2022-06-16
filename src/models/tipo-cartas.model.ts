@@ -1,5 +1,9 @@
-import {model, property} from '@loopback/repository';
-import {TimeStamp} from './';
+import {hasMany, model, property} from '@loopback/repository';
+import {Campo} from './campo.model';
+import {TimeStamp} from './time-stamp.model';
+import {TipoCartaCampo} from './tipo-carta-campo.model';
+import {Area} from './area.model';
+import {AreaTipoCarta} from './area-tipo-carta.model';
 
 @model()
 export class TipoCartas extends TimeStamp {
@@ -15,6 +19,12 @@ export class TipoCartas extends TimeStamp {
     required: true,
   })
   nombre: string;
+
+  @hasMany(() => Campo, {through: {model: () => TipoCartaCampo}})
+  campos: Campo[];
+
+  @hasMany(() => Area, {through: {model: () => AreaTipoCarta}})
+  areas: Area[];
 
   constructor(data?: Partial<TipoCartas>) {
     super(data);

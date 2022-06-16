@@ -6,3 +6,7 @@ export * from './time-stamp.model';
 export * from './tipo-cartas.model';
 export * from './usuario-credentials.model';
 export * from './usuario.model';
+export * from './campo.model';
+export * from './tipo-carta-campo.model';
+export * from './area-tipo-carta.model';
+export * from './many-to-many.model';

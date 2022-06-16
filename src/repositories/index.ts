@@ -5,3 +5,6 @@ export * from './area.repository';
 export * from './responsable.repository';
 export * from './file.repository';
 export * from './tipo-cartas.repository';
+export * from './campo.repository';
+export * from './tipo-carta-campo.repository';
+export * from './area-tipo-carta.repository';

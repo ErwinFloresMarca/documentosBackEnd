@@ -31,7 +31,7 @@ import {
   UserServiceBindings,
 } from '../keys';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Usuario} from '../models';
+import {Responsable, Usuario} from '../models';
 import {
   Credentials,
   LoginCredentials,
@@ -337,5 +337,26 @@ export class UsuarioController {
       token,
       usuario: user,
     };
+  }
+
+  //relación responsables
+  @get('/usuarios/{id}/responsables', {
+    responses: {
+      '200': {
+        description: 'Array of Usuario has many Responsable',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(Responsable)},
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  async findResponsables(
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<Responsable>,
+  ): Promise<Responsable[]> {
+    return this.usuarioRepository.responsables(id).find(filter);
   }
 }

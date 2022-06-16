@@ -1,6 +1,8 @@
 import {model, property, hasMany} from '@loopback/repository';
 import {TimeStamp} from './time-stamp.model';
 import {Responsable} from './responsable.model';
+import {TipoCartas} from './tipo-cartas.model';
+import {AreaTipoCarta} from './area-tipo-carta.model';
 
 @model()
 export class Area extends TimeStamp {
@@ -24,6 +26,9 @@ export class Area extends TimeStamp {
 
   @hasMany(() => Responsable)
   responsables: Responsable[];
+
+  @hasMany(() => TipoCartas, {through: {model: () => AreaTipoCarta}})
+  tipoCartas: TipoCartas[];
 
   constructor(data?: Partial<Area>) {
     super(data);

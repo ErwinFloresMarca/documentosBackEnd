@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,13 +8,12 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
-  put,
-  del,
+  post,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,7 +23,7 @@ import {CatalogosRepository} from '../repositories';
 export class CatalogoController {
   constructor(
     @repository(CatalogosRepository)
-    public catalogosRepository : CatalogosRepository,
+    public catalogosRepository: CatalogosRepository,
   ) {}
 
   @post('/catalogos')
@@ -31,6 +31,7 @@ export class CatalogoController {
     description: 'Catalogos model instance',
     content: {'application/json': {schema: getModelSchemaRef(Catalogos)}},
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -52,6 +53,7 @@ export class CatalogoController {
     description: 'Catalogos model count',
     content: {'application/json': {schema: CountSchema}},
   })
+  @authenticate('jwt')
   async count(
     @param.where(Catalogos) where?: Where<Catalogos>,
   ): Promise<Count> {
@@ -70,29 +72,11 @@ export class CatalogoController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
     @param.filter(Catalogos) filter?: Filter<Catalogos>,
   ): Promise<Catalogos[]> {
     return this.catalogosRepository.find(filter);
-  }
-
-  @patch('/catalogos')
-  @response(200, {
-    description: 'Catalogos PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Catalogos, {partial: true}),
-        },
-      },
-    })
-    catalogos: Catalogos,
-    @param.where(Catalogos) where?: Where<Catalogos>,
-  ): Promise<Count> {
-    return this.catalogosRepository.updateAll(catalogos, where);
   }
 
   @get('/catalogos/{id}')
@@ -104,9 +88,11 @@ export class CatalogoController {
       },
     },
   })
+  @authenticate('jwt')
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Catalogos, {exclude: 'where'}) filter?: FilterExcludingWhere<Catalogos>
+    @param.filter(Catalogos, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Catalogos>,
   ): Promise<Catalogos> {
     return this.catalogosRepository.findById(id, filter);
   }
@@ -115,6 +101,7 @@ export class CatalogoController {
   @response(204, {
     description: 'Catalogos PATCH success',
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
@@ -129,21 +116,11 @@ export class CatalogoController {
     await this.catalogosRepository.updateById(id, catalogos);
   }
 
-  @put('/catalogos/{id}')
-  @response(204, {
-    description: 'Catalogos PUT success',
-  })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() catalogos: Catalogos,
-  ): Promise<void> {
-    await this.catalogosRepository.replaceById(id, catalogos);
-  }
-
   @del('/catalogos/{id}')
   @response(204, {
     description: 'Catalogos DELETE success',
   })
+  @authenticate('jwt')
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.catalogosRepository.deleteById(id);
   }
