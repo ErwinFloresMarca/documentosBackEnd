@@ -21,7 +21,6 @@ export class Catalogos extends Entity {
   })
   nombre: string;
 
-
   constructor(data?: Partial<Catalogos>) {
     super(data);
   }

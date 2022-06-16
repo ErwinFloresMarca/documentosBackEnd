@@ -109,6 +109,7 @@ export class UsuarioController {
     })
     user: Usuario,
   ): Promise<void> {
+    user.updatedAt = new Date().toISOString();
     await this.usuarioRepository.updateById(id, user);
   }
 

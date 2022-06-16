@@ -19,14 +19,14 @@ import {
   response,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Area} from '../models';
-import {AreaRepository} from '../repositories';
+import {TipoCartas} from '../models';
+import {TipoCartasRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 
-export class AreaController {
+export class TipoCartaController {
   constructor(
-    @repository(AreaRepository)
-    public areaRepository: AreaRepository,
+    @repository(TipoCartasRepository)
+    public tipoCartasRepository: TipoCartasRepository,
   ) {}
 
   @authenticate('jwt')
@@ -34,69 +34,74 @@ export class AreaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @post('/areas')
+  @post('/tipo-cartas')
   @response(200, {
-    description: 'Area model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Area)}},
+    description: 'TipoCartas model instance',
+    content: {'application/json': {schema: getModelSchemaRef(TipoCartas)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Area, {
-            title: 'NewArea',
+          schema: getModelSchemaRef(TipoCartas, {
+            title: 'NewTipoCartas',
             exclude: ['id'],
           }),
         },
       },
     })
-    area: Omit<Area, 'id'>,
-  ): Promise<Area> {
-    return this.areaRepository.create(area);
+    tipoCartas: Omit<TipoCartas, 'id'>,
+  ): Promise<TipoCartas> {
+    return this.tipoCartasRepository.create(tipoCartas);
   }
 
   @authenticate('jwt')
-  @get('/areas/count')
+  @get('/tipo-cartas/count')
   @response(200, {
-    description: 'Area model count',
+    description: 'TipoCartas model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(@param.where(Area) where?: Where<Area>): Promise<Count> {
-    return this.areaRepository.count(where);
+  async count(
+    @param.where(TipoCartas) where?: Where<TipoCartas>,
+  ): Promise<Count> {
+    return this.tipoCartasRepository.count(where);
   }
 
   @authenticate('jwt')
-  @get('/areas')
+  @get('/tipo-cartas')
   @response(200, {
-    description: 'Array of Area model instances',
+    description: 'Array of TipoCartas model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Area, {includeRelations: true}),
+          items: getModelSchemaRef(TipoCartas, {includeRelations: true}),
         },
       },
     },
   })
-  async find(@param.filter(Area) filter?: Filter<Area>): Promise<Area[]> {
-    return this.areaRepository.find(filter);
+  async find(
+    @param.filter(TipoCartas) filter?: Filter<TipoCartas>,
+  ): Promise<TipoCartas[]> {
+    return this.tipoCartasRepository.find(filter);
   }
 
   @authenticate('jwt')
-  @get('/areas/{id}')
+  @get('/tipo-cartas/{id}')
   @response(200, {
-    description: 'Area model instance',
+    description: 'TipoCartas model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Area, {includeRelations: true}),
+        schema: getModelSchemaRef(TipoCartas, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Area, {exclude: 'where'}) filter?: FilterExcludingWhere<Area>,
-  ): Promise<Area> {
-    return this.areaRepository.findById(id, filter);
+    @param.filter(TipoCartas, {exclude: 'where'})
+    filter?: FilterExcludingWhere<TipoCartas>,
+  ): Promise<TipoCartas> {
+    return this.tipoCartasRepository.findById(id, filter);
   }
 
   @authenticate('jwt')
@@ -104,23 +109,23 @@ export class AreaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @patch('/areas/{id}')
+  @patch('/tipo-cartas/{id}')
   @response(204, {
-    description: 'Area PATCH success',
+    description: 'TipoCartas PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Area, {partial: true}),
+          schema: getModelSchemaRef(TipoCartas, {partial: true}),
         },
       },
     })
-    area: Area,
+    tipoCartas: TipoCartas,
   ): Promise<void> {
-    area.updatedAt = new Date().toISOString();
-    await this.areaRepository.updateById(id, area);
+    tipoCartas.updatedAt = new Date().toISOString();
+    await this.tipoCartasRepository.updateById(id, tipoCartas);
   }
 
   @authenticate('jwt')
@@ -128,11 +133,11 @@ export class AreaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @del('/areas/{id}')
+  @del('/tipo-cartas/{id}')
   @response(204, {
-    description: 'Area DELETE success',
+    description: 'TipoCartas DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.areaRepository.deleteById(id);
+    await this.tipoCartasRepository.deleteById(id);
   }
 }
