@@ -158,15 +158,16 @@ export class CampoController {
     return this.campoRepository.tipoCartas(id).find(filter);
   }
 
-  @post('/campos/tipo-cartas/link', {
+  @post('/campos/{id}/tipo-cartas/links', {
     responses: {
       '200': {
         description: 'crear relación',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(ManyToMany, {
-              title: 'ManyToManySchema',
-            }),
+            schema: {
+              title: 'ids of link tipo cartas',
+              type: 'number[]',
+            },
           },
         },
       },
@@ -178,6 +179,7 @@ export class CampoController {
     voters: [basicAuthorization],
   })
   async linkTipoCarta(
+    @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
@@ -188,41 +190,36 @@ export class CampoController {
       },
     })
     data: ManyToMany,
-  ): Promise<void> {
-    return this.campoRepository.tipoCartas(data.id).link(data.relationId);
+  ): Promise<Array<number | undefined>> {
+    if (data.link)
+      await this.campoRepository.tipoCartas(id).link(data.relationId);
+    else await this.campoRepository.tipoCartas(id).unlink(data.relationId);
+    return (
+      await this.campoRepository.tipoCartas(id).find({fields: {id: true}})
+    ).map(tp => tp.id);
   }
 
-  @post('/campos/tipo-cartas/unlink', {
+  @get('/campos/{id}/tipo-cartas/links', {
     responses: {
       '200': {
-        description: 'eliminar relación',
+        description: 'lista ids relacionados tipo cartas',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(ManyToMany, {
-              title: 'ManyToManySchema',
-            }),
+            schema: {
+              title: 'ids of link tipo cartas',
+              type: 'number[]',
+            },
           },
         },
       },
     },
   })
   @authenticate('jwt')
-  @authorize({
-    allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
-    voters: [basicAuthorization],
-  })
-  async unlinkTipoCarta(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ManyToMany, {
-            title: 'ManyToManySchema',
-          }),
-        },
-      },
-    })
-    data: ManyToMany,
-  ): Promise<void> {
-    return this.campoRepository.tipoCartas(data.id).unlink(data.relationId);
+  async getLinkTipoCarta(
+    @param.path.number('id') id: number,
+  ): Promise<Array<number | undefined>> {
+    return (
+      await this.campoRepository.tipoCartas(id).find({fields: {id: true}})
+    ).map(tp => tp.id);
   }
 }

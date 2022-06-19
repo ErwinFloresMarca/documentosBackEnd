@@ -187,15 +187,16 @@ export class TipoCartaController {
     return this.tipoCartasRepository.campos(id).create(campo);
   }
 
-  @post('/tipo-cartas/campos/link', {
+  @post('/tipo-cartas/{id}/campos/links', {
     responses: {
       '200': {
         description: 'crear relación',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(ManyToMany, {
-              title: 'ManyToManySchema',
-            }),
+            schema: {
+              title: 'ids of link campos',
+              type: 'number[]',
+            },
           },
         },
       },
@@ -206,7 +207,8 @@ export class TipoCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  async linkCampo(
+  async linkCampos(
+    @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
@@ -217,42 +219,37 @@ export class TipoCartaController {
       },
     })
     data: ManyToMany,
-  ): Promise<void> {
-    return this.tipoCartasRepository.campos(data.id).link(data.relationId);
+  ): Promise<Array<number | undefined>> {
+    if (data.link)
+      await this.tipoCartasRepository.campos(id).link(data.relationId);
+    else await this.tipoCartasRepository.campos(id).unlink(data.relationId);
+    return (
+      await this.tipoCartasRepository.campos(id).find({fields: {id: true}})
+    ).map(tp => tp.id);
   }
 
-  @post('/tipo-cartas/campos/unlink', {
+  @get('/tipo-cartas/{id}/campos/links', {
     responses: {
       '200': {
-        description: 'eliminar relación',
+        description: 'lista ids relacionados campos',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(ManyToMany, {
-              title: 'ManyToManySchema',
-            }),
+            schema: {
+              title: 'ids of link campos',
+              type: 'number[]',
+            },
           },
         },
       },
     },
   })
   @authenticate('jwt')
-  @authorize({
-    allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
-    voters: [basicAuthorization],
-  })
-  async unlinkCampo(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ManyToMany, {
-            title: 'ManyToManySchema',
-          }),
-        },
-      },
-    })
-    data: ManyToMany,
-  ): Promise<void> {
-    return this.tipoCartasRepository.campos(data.id).unlink(data.relationId);
+  async getLinkCampos(
+    @param.path.number('id') id: number,
+  ): Promise<Array<number | undefined>> {
+    return (
+      await this.tipoCartasRepository.campos(id).find({fields: {id: true}})
+    ).map(c => c.id);
   }
 
   // realcion muchos a muchos con areas
@@ -276,15 +273,16 @@ export class TipoCartaController {
     return this.tipoCartasRepository.areas(id).find(filter);
   }
 
-  @post('/tipo-cartas/areas/link', {
+  @post('/tipo-cartas/{id}/areas/links', {
     responses: {
       '200': {
         description: 'crear relación',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(ManyToMany, {
-              title: 'ManyToManySchema',
-            }),
+            schema: {
+              title: 'ids of link areas',
+              type: 'number[]',
+            },
           },
         },
       },
@@ -295,7 +293,8 @@ export class TipoCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  async linkArea(
+  async linkTipoCarta(
+    @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
@@ -306,41 +305,36 @@ export class TipoCartaController {
       },
     })
     data: ManyToMany,
-  ): Promise<void> {
-    return this.tipoCartasRepository.areas(data.id).link(data.relationId);
+  ): Promise<Array<number | undefined>> {
+    if (data.link)
+      await this.tipoCartasRepository.areas(id).link(data.relationId);
+    else await this.tipoCartasRepository.areas(id).unlink(data.relationId);
+    return (
+      await this.tipoCartasRepository.areas(id).find({fields: {id: true}})
+    ).map(tp => tp.id);
   }
 
-  @post('/tipo-cartas/areas/unlink', {
+  @get('/tipo-cartas/{id}/areas/links', {
     responses: {
       '200': {
-        description: 'eliminar relación',
+        description: 'lista ids relacionados areas',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(ManyToMany, {
-              title: 'ManyToManySchema',
-            }),
+            schema: {
+              title: 'ids of link areas',
+              type: 'number[]',
+            },
           },
         },
       },
     },
   })
   @authenticate('jwt')
-  @authorize({
-    allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
-    voters: [basicAuthorization],
-  })
-  async unlinkArea(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ManyToMany, {
-            title: 'ManyToManySchema',
-          }),
-        },
-      },
-    })
-    data: ManyToMany,
-  ): Promise<void> {
-    return this.tipoCartasRepository.areas(data.id).unlink(data.relationId);
+  async getLinkTipoCarta(
+    @param.path.number('id') id: number,
+  ): Promise<Array<number | undefined>> {
+    return (
+      await this.tipoCartasRepository.areas(id).find({fields: {id: true}})
+    ).map(a => a.id);
   }
 }

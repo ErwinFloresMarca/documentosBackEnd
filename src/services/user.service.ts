@@ -16,10 +16,10 @@ export class MyUserService implements UserService<Usuario, Credentials> {
   ) {}
 
   async verifyCredentials(credentials: Credentials): Promise<Usuario> {
-    const invalidCredentialsError = 'Invalid email or password.';
+    const invalidCredentialsError = 'usuario o contraseña invalido.';
 
     const foundUser = await this.userRepository.findOne({
-      where: {email: credentials.email},
+      where: {usuario: credentials.usuario},
     });
     if (!foundUser) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);

@@ -178,7 +178,7 @@ export class AreaController {
     return this.areaRepository.tipoCartas(id).find(filter);
   }
 
-  @post('/areas/tipo-cartas/links', {
+  @post('/areas/{id}/tipo-cartas/links', {
     responses: {
       '200': {
         description: 'crear relación',
@@ -199,6 +199,7 @@ export class AreaController {
     voters: [basicAuthorization],
   })
   async linkTipoCarta(
+    @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
@@ -211,10 +212,10 @@ export class AreaController {
     data: ManyToMany,
   ): Promise<Array<number | undefined>> {
     if (data.link)
-      await this.areaRepository.tipoCartas(data.id).link(data.relationId);
-    else await this.areaRepository.tipoCartas(data.id).unlink(data.relationId);
+      await this.areaRepository.tipoCartas(id).link(data.relationId);
+    else await this.areaRepository.tipoCartas(id).unlink(data.relationId);
     return (
-      await this.areaRepository.tipoCartas(data.id).find({fields: {id: true}})
+      await this.areaRepository.tipoCartas(id).find({fields: {id: true}})
     ).map(tp => tp.id);
   }
 

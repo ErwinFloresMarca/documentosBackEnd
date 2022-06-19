@@ -7,13 +7,6 @@ export class ManyToMany extends Model {
     min: 1,
     required: true,
   })
-  id: number;
-
-  @property({
-    type: 'number',
-    min: 1,
-    required: true,
-  })
   relationId: number;
 
   @property({
