@@ -19,7 +19,7 @@ export class MyUserService implements UserService<Usuario, Credentials> {
     const invalidCredentialsError = 'usuario o contraseña invalido.';
 
     const foundUser = await this.userRepository.findOne({
-      where: {usuario: credentials.usuario},
+      where: {usuario: credentials.usuario, estado: true},
     });
     if (!foundUser) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
