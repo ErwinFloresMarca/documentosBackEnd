@@ -1,7 +1,7 @@
-import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
+import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
 import {Catalogos} from './catalogos.model';
-import {TipoCartas} from './tipo-cartas.model';
 import {TipoCartaCampo} from './tipo-carta-campo.model';
+import {TipoCartas} from './tipo-cartas.model';
 
 @model()
 export class Campo extends Entity {
@@ -35,12 +35,6 @@ export class Campo extends Entity {
     required: true,
   })
   type: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  dataType: string;
 
   @property({
     type: 'string',
