@@ -1,7 +1,7 @@
-import {model, property, belongsTo} from '@loopback/repository';
+import {belongsTo, model, property} from '@loopback/repository';
+import {Area, AreaWithRelations} from './area.model';
 import {TimeStamp} from './time-stamp.model';
-import {Usuario} from './usuario.model';
-import {Area} from './area.model';
+import {Usuario, UsuarioWithRelations} from './usuario.model';
 
 @model()
 export class Responsable extends TimeStamp {
@@ -25,6 +25,8 @@ export class Responsable extends TimeStamp {
 
 export interface ResponsableRelations {
   // describe navigational properties here
+  usuario?: UsuarioWithRelations;
+  area?: AreaWithRelations;
 }
 
 export type ResponsableWithRelations = Responsable & ResponsableRelations;

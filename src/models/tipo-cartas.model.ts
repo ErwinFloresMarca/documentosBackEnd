@@ -1,9 +1,9 @@
 import {hasMany, model, property} from '@loopback/repository';
-import {Campo} from './campo.model';
+import {AreaTipoCarta} from './area-tipo-carta.model';
+import {Area, AreaWithRelations} from './area.model';
+import {Campo, CampoWithRelations} from './campo.model';
 import {TimeStamp} from './time-stamp.model';
 import {TipoCartaCampo} from './tipo-carta-campo.model';
-import {Area} from './area.model';
-import {AreaTipoCarta} from './area-tipo-carta.model';
 
 @model()
 export class TipoCartas extends TimeStamp {
@@ -33,6 +33,8 @@ export class TipoCartas extends TimeStamp {
 
 export interface TipoCartasRelations {
   // describe navigational properties here
+  campos?: CampoWithRelations[];
+  areas?: AreaWithRelations[];
 }
 
 export type TipoCartasWithRelations = TipoCartas & TipoCartasRelations;

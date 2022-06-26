@@ -1,8 +1,8 @@
-import {model, property, hasMany} from '@loopback/repository';
-import {TimeStamp} from './time-stamp.model';
-import {Responsable} from './responsable.model';
-import {TipoCartas} from './tipo-cartas.model';
+import {hasMany, model, property} from '@loopback/repository';
 import {AreaTipoCarta} from './area-tipo-carta.model';
+import {Responsable, ResponsableWithRelations} from './responsable.model';
+import {TimeStamp} from './time-stamp.model';
+import {TipoCartas, TipoCartasWithRelations} from './tipo-cartas.model';
 
 @model()
 export class Area extends TimeStamp {
@@ -36,6 +36,8 @@ export class Area extends TimeStamp {
 }
 
 export interface AreaRelations {
+  responsables?: ResponsableWithRelations[];
+  tipoCartas?: TipoCartasWithRelations[];
   // describe navigational properties here
 }
 
