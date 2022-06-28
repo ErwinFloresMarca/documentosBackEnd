@@ -124,6 +124,7 @@ export class ResponsableController {
     })
     responsable: Responsable,
   ): Promise<void> {
+    responsable.updatedAt = new Date().toISOString();
     await this.responsableRepository.updateById(id, responsable);
   }
 
