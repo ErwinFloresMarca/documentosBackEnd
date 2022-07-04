@@ -8,3 +8,6 @@ export * from './tipo-cartas.repository';
 export * from './campo.repository';
 export * from './tipo-carta-campo.repository';
 export * from './area-tipo-carta.repository';
+export * from './carta-area.repository';
+export * from './carta-evento.repository';
+export * from './carta.repository';

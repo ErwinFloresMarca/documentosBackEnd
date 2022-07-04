@@ -10,3 +10,6 @@ export * from './campo.model';
 export * from './tipo-carta-campo.model';
 export * from './area-tipo-carta.model';
 export * from './many-to-many.model';
+export * from './carta.model';
+export * from './carta-area.model';
+export * from './carta-evento.model';
