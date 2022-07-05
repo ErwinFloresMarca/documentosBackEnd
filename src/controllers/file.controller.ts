@@ -134,7 +134,7 @@ export class FileController {
     return resp;
   }
 
-  @get('/files/byId/{fileId}')
+  @get('/files/by-id/{fileId}')
   @response(200, {
     description: 'File model instance',
     content: {
@@ -143,8 +143,52 @@ export class FileController {
       },
     },
   })
-  downloadFileById(@param.path.number('fileId') fileId: number) {
+  fileById(@param.path.number('fileId') fileId: number) {
     return this.fileRepository.findById(fileId);
+  }
+
+  @get('/files/download/by-id/{fileId}')
+  @response(200, {
+    description: 'File model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(File, {includeRelations: true}),
+      },
+    },
+  })
+  async downloadFileById(
+    @param.path.number('fileId') fileId: number,
+    @inject(RestBindings.Http.RESPONSE) resp: Response,
+  ) {
+    const fileData = await this.fileRepository.findById(fileId);
+    const file = this.validateFileName(fileData.fileName);
+    resp.download(file, fileData.fileName);
+    return resp;
+  }
+
+  @get('/files/base64/by-id/{fileId}')
+  @response(200, {
+    description: 'File model instance',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['base64'],
+          properties: {
+            base64: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+  })
+  async base64FileById(@param.path.number('fileId') fileId: number) {
+    const fileData = await this.fileRepository.findById(fileId);
+    const file = this.validateFileName(fileData.fileName);
+    return {
+      base64: fs.readFileSync(file, {encoding: 'base64'}),
+    };
   }
 
   /**
