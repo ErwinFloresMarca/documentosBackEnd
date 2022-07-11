@@ -52,6 +52,10 @@ export class CartaController {
     })
     carta: Omit<Carta, 'id'>,
   ): Promise<Carta> {
+    const lastNumDoc = await this.cartaRepository.findOne({
+      order: ['numDoc DESC'],
+    });
+    carta.numDoc = lastNumDoc?.numDoc ? lastNumDoc.numDoc + 1 : 1;
     return this.cartaRepository.create(carta);
   }
 
