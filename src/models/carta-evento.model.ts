@@ -1,5 +1,4 @@
-import {belongsTo, model, property} from '@loopback/repository';
-import {Area, AreaWithRelations} from './area.model';
+import {model, property} from '@loopback/repository';
 import {TimeStamp} from './time-stamp.model';
 
 @model()
@@ -34,16 +33,12 @@ export class CartaEvento extends TimeStamp {
   })
   cartaId?: number;
 
-  @belongsTo(() => Area)
-  areaId: number;
-
   constructor(data?: Partial<CartaEvento>) {
     super(data);
   }
 }
 
 export interface CartaEventoRelations {
-  area?: AreaWithRelations;
   // describe navigational properties here
 }
 

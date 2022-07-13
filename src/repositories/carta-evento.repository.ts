@@ -1,22 +1,19 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
+import {inject} from '@loopback/core';
+import {BelongsToAccessor, DefaultCrudRepository} from '@loopback/repository';
 import {MysqlDbDataSource} from '../datasources';
-import {CartaEvento, CartaEventoRelations, Area} from '../models';
-import {AreaRepository} from './area.repository';
+import {Area, CartaEvento, CartaEventoRelations} from '../models';
 
 export class CartaEventoRepository extends DefaultCrudRepository<
   CartaEvento,
   typeof CartaEvento.prototype.id,
   CartaEventoRelations
 > {
+  public readonly area: BelongsToAccessor<
+    Area,
+    typeof CartaEvento.prototype.id
+  >;
 
-  public readonly area: BelongsToAccessor<Area, typeof CartaEvento.prototype.id>;
-
-  constructor(
-    @inject('datasources.mysqlDb') dataSource: MysqlDbDataSource, @repository.getter('AreaRepository') protected areaRepositoryGetter: Getter<AreaRepository>,
-  ) {
+  constructor(@inject('datasources.mysqlDb') dataSource: MysqlDbDataSource) {
     super(CartaEvento, dataSource);
-    this.area = this.createBelongsToAccessorFor('area', areaRepositoryGetter,);
-    this.registerInclusionResolver('area', this.area.inclusionResolver);
   }
 }
