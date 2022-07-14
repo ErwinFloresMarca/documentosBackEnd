@@ -2,7 +2,7 @@ import {model, property} from '@loopback/repository';
 import {TimeStamp} from './time-stamp.model';
 
 @model()
-export class CartaEvento extends TimeStamp {
+export class DocumentoEvento extends TimeStamp {
   @property({
     type: 'number',
     id: true,
@@ -31,15 +31,16 @@ export class CartaEvento extends TimeStamp {
   @property({
     type: 'number',
   })
-  cartaId?: number;
+  documentoId?: number;
 
-  constructor(data?: Partial<CartaEvento>) {
+  constructor(data?: Partial<DocumentoEvento>) {
     super(data);
   }
 }
 
-export interface CartaEventoRelations {
+export interface DocumentoEventoRelations {
   // describe navigational properties here
 }
 
-export type CartaEventoWithRelations = CartaEvento & CartaEventoRelations;
+export type DocumentoEventoWithRelations = DocumentoEvento &
+  DocumentoEventoRelations;

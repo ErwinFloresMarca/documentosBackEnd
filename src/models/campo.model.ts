@@ -1,6 +1,9 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
-import {TipoCartaCampo} from './tipo-carta-campo.model';
-import {TipoCartas, TipoCartasWithRelations} from './tipo-cartas.model';
+import {TipoDocumentoCampo} from './tipo-documento-campo.model';
+import {
+  TipoDocumentos,
+  TipoDocumentosWithRelations,
+} from './tipo-documentos.model';
 
 @model()
 export class Campo extends Entity {
@@ -64,8 +67,8 @@ export class Campo extends Entity {
   })
   estado?: boolean;
 
-  @hasMany(() => TipoCartas, {through: {model: () => TipoCartaCampo}})
-  tipoCartas: TipoCartas[];
+  @hasMany(() => TipoDocumentos, {through: {model: () => TipoDocumentoCampo}})
+  tipoDocumentos: TipoDocumentos[];
 
   constructor(data?: Partial<Campo>) {
     super(data);
@@ -73,7 +76,7 @@ export class Campo extends Entity {
 }
 
 export interface CampoRelations {
-  tipoCartas?: TipoCartasWithRelations[];
+  tipoDocumentos?: TipoDocumentosWithRelations[];
   // describe navigational properties here
 }
 

@@ -32,7 +32,7 @@ import {v4 as uuidv4} from 'uuid';
 
 export {ApplicationConfig};
 
-export class CartasAplication extends BootMixin(
+export class DocumentosAplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {

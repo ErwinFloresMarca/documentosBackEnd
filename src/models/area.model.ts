@@ -1,10 +1,13 @@
 import {hasMany, model, property} from '@loopback/repository';
-import {AreaTipoCarta} from './area-tipo-carta.model';
+import {AreaTipoDocumento} from './area-tipo-documento.model';
+import {DocumentoArea} from './documento-area.model';
+import {Documento} from './documento.model';
 import {Responsable, ResponsableWithRelations} from './responsable.model';
 import {TimeStamp} from './time-stamp.model';
-import {TipoCartas, TipoCartasWithRelations} from './tipo-cartas.model';
-import {Carta} from './carta.model';
-import {CartaArea} from './carta-area.model';
+import {
+  TipoDocumentos,
+  TipoDocumentosWithRelations,
+} from './tipo-documentos.model';
 
 @model()
 export class Area extends TimeStamp {
@@ -29,11 +32,11 @@ export class Area extends TimeStamp {
   @hasMany(() => Responsable)
   responsables: Responsable[];
 
-  @hasMany(() => TipoCartas, {through: {model: () => AreaTipoCarta}})
-  tipoCartas: TipoCartas[];
+  @hasMany(() => TipoDocumentos, {through: {model: () => AreaTipoDocumento}})
+  tipoDocumentos: TipoDocumentos[];
 
-  @hasMany(() => Carta, {through: {model: () => CartaArea}})
-  cartas: Carta[];
+  @hasMany(() => Documento, {through: {model: () => DocumentoArea}})
+  documentos: Documento[];
 
   constructor(data?: Partial<Area>) {
     super(data);
@@ -42,7 +45,7 @@ export class Area extends TimeStamp {
 
 export interface AreaRelations {
   responsables?: ResponsableWithRelations[];
-  tipoCartas?: TipoCartasWithRelations[];
+  tipoDocumentos?: TipoDocumentosWithRelations[];
   // describe navigational properties here
 }
 

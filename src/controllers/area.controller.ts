@@ -19,7 +19,7 @@ import {
   response,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Area, ManyToMany, Responsable, TipoCartas} from '../models';
+import {Area, ManyToMany, Responsable, TipoDocumentos} from '../models';
 import {AreaRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 
@@ -157,35 +157,36 @@ export class AreaController {
     return this.areaRepository.responsables(id).find(filter);
   }
 
-  // relacion muchos a muchos con tipo cartas
-  @get('/areas/{id}/tipo-cartas', {
+  // relacion muchos a muchos con tipo documentos
+  @get('/areas/{id}/tipo-documentos', {
     responses: {
       '200': {
-        description: 'Array of Area has many TipoCartas through AreaTipoCarta',
+        description:
+          'Array of Area has many TipoDocumentos through AreaTipoDocumento',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(TipoCartas)},
+            schema: {type: 'array', items: getModelSchemaRef(TipoDocumentos)},
           },
         },
       },
     },
   })
   @authenticate('jwt')
-  async findTipoCartas(
+  async findTipoDocumentos(
     @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<TipoCartas>,
-  ): Promise<TipoCartas[]> {
-    return this.areaRepository.tipoCartas(id).find(filter);
+    @param.query.object('filter') filter?: Filter<TipoDocumentos>,
+  ): Promise<TipoDocumentos[]> {
+    return this.areaRepository.tipoDocumentos(id).find(filter);
   }
 
-  @post('/areas/{id}/tipo-cartas/links', {
+  @post('/areas/{id}/tipo-documentos/links', {
     responses: {
       '200': {
         description: 'crear relación',
         content: {
           'application/json': {
             schema: {
-              title: 'ids of link tipo cartas',
+              title: 'ids of link tipo documentos',
               type: 'number[]',
             },
           },
@@ -198,7 +199,7 @@ export class AreaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  async linkTipoCarta(
+  async linkTipoDocumento(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
@@ -212,21 +213,21 @@ export class AreaController {
     data: ManyToMany,
   ): Promise<Array<number | undefined>> {
     if (data.link)
-      await this.areaRepository.tipoCartas(id).link(data.relationId);
-    else await this.areaRepository.tipoCartas(id).unlink(data.relationId);
+      await this.areaRepository.tipoDocumentos(id).link(data.relationId);
+    else await this.areaRepository.tipoDocumentos(id).unlink(data.relationId);
     return (
-      await this.areaRepository.tipoCartas(id).find({fields: {id: true}})
+      await this.areaRepository.tipoDocumentos(id).find({fields: {id: true}})
     ).map(tp => tp.id);
   }
 
-  @get('/areas/{id}/tipo-cartas/links', {
+  @get('/areas/{id}/tipo-documentos/links', {
     responses: {
       '200': {
-        description: 'lista ids relacionados tipo cartas',
+        description: 'lista ids relacionados tipo documentos',
         content: {
           'application/json': {
             schema: {
-              title: 'ids of link tipo cartas',
+              title: 'ids of link tipo documentos',
               type: 'number[]',
             },
           },
@@ -235,11 +236,11 @@ export class AreaController {
     },
   })
   @authenticate('jwt')
-  async getLinkTipoCarta(
+  async getLinkTipoDocumento(
     @param.path.number('id') id: number,
   ): Promise<Array<number | undefined>> {
     return (
-      await this.areaRepository.tipoCartas(id).find({fields: {id: true}})
+      await this.areaRepository.tipoDocumentos(id).find({fields: {id: true}})
     ).map(tp => tp.id);
   }
 }

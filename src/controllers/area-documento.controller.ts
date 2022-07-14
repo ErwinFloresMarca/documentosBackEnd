@@ -18,25 +18,26 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Area, Carta} from '../models';
+import {Area, Documento} from '../models';
 import {AreaRepository} from '../repositories';
 import Roles from '../utils/roles.util';
-import {CartaRepository} from './../repositories/carta.repository';
+import {DocumentoRepository} from './../repositories/documento.repository';
 
-export class AreaCartaController {
+export class AreaDocumentoController {
   constructor(
     @repository(AreaRepository) protected areaRepository: AreaRepository,
-    @repository(CartaRepository) protected cartaRepository: CartaRepository,
+    @repository(DocumentoRepository)
+    protected documentoRepository: DocumentoRepository,
   ) {}
 
   @authenticate('jwt')
-  @get('/areas/{id}/cartas', {
+  @get('/areas/{id}/documentos', {
     responses: {
       '200': {
-        description: 'Array of Area has many Carta through CartaArea',
+        description: 'Array of Area has many Documento through DocumentoArea',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Carta)},
+            schema: {type: 'array', items: getModelSchemaRef(Documento)},
           },
         },
       },
@@ -44,9 +45,9 @@ export class AreaCartaController {
   })
   async find(
     @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<Carta>,
-  ): Promise<Carta[]> {
-    return this.areaRepository.cartas(id).find(filter);
+    @param.query.object('filter') filter?: Filter<Documento>,
+  ): Promise<Documento[]> {
+    return this.areaRepository.documentos(id).find(filter);
   }
 
   @authenticate('jwt')
@@ -54,11 +55,11 @@ export class AreaCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @post('/areas/{id}/cartas', {
+  @post('/areas/{id}/documentos', {
     responses: {
       '200': {
-        description: 'create a Carta model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Carta)}},
+        description: 'create a Documento model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Documento)}},
       },
     },
   })
@@ -67,16 +68,16 @@ export class AreaCartaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Carta, {
-            title: 'NewCartaInArea',
+          schema: getModelSchemaRef(Documento, {
+            title: 'NewDocumentoInArea',
             exclude: ['id'],
           }),
         },
       },
     })
-    carta: Omit<Carta, 'id'>,
-  ): Promise<Carta> {
-    return this.areaRepository.cartas(id).create(carta);
+    documento: Omit<Documento, 'id'>,
+  ): Promise<Documento> {
+    return this.areaRepository.documentos(id).create(documento);
   }
 
   @authenticate('jwt')
@@ -84,10 +85,10 @@ export class AreaCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @patch('/areas/{id}/cartas', {
+  @patch('/areas/{id}/documentos', {
     responses: {
       '200': {
-        description: 'Area.Carta PATCH success count',
+        description: 'Area.Documento PATCH success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -97,14 +98,15 @@ export class AreaCartaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Carta, {partial: true}),
+          schema: getModelSchemaRef(Documento, {partial: true}),
         },
       },
     })
-    carta: Partial<Carta>,
-    @param.query.object('where', getWhereSchemaFor(Carta)) where?: Where<Carta>,
+    documento: Partial<Documento>,
+    @param.query.object('where', getWhereSchemaFor(Documento))
+    where?: Where<Documento>,
   ): Promise<Count> {
-    return this.areaRepository.cartas(id).patch(carta, where);
+    return this.areaRepository.documentos(id).patch(documento, where);
   }
 
   @authenticate('jwt')
@@ -112,18 +114,19 @@ export class AreaCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @del('/areas/{id}/cartas', {
+  @del('/areas/{id}/documentos', {
     responses: {
       '200': {
-        description: 'Area.Carta DELETE success count',
+        description: 'Area.Documento DELETE success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   async delete(
     @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(Carta)) where?: Where<Carta>,
+    @param.query.object('where', getWhereSchemaFor(Documento))
+    where?: Where<Documento>,
   ): Promise<Count> {
-    return this.areaRepository.cartas(id).delete(where);
+    return this.areaRepository.documentos(id).delete(where);
   }
 }

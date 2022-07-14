@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class AreaTipoCarta extends Entity {
+export class AreaTipoDocumento extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -17,15 +17,16 @@ export class AreaTipoCarta extends Entity {
   @property({
     type: 'number',
   })
-  tipoCartasId?: number;
+  tipoDocumentosId?: number;
 
-  constructor(data?: Partial<AreaTipoCarta>) {
+  constructor(data?: Partial<AreaTipoDocumento>) {
     super(data);
   }
 }
 
-export interface AreaTipoCartaRelations {
+export interface AreaTipoDocumentoRelations {
   // describe navigational properties here
 }
 
-export type AreaTipoCartaWithRelations = AreaTipoCarta & AreaTipoCartaRelations;
+export type AreaTipoDocumentoWithRelations = AreaTipoDocumento &
+  AreaTipoDocumentoRelations;

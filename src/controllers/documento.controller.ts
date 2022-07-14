@@ -19,20 +19,20 @@ import {
   response,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Area, Carta, File, ManyToMany, TipoCartas} from '../models';
-import {CartaRepository} from '../repositories';
+import {Area, Documento, File, ManyToMany, TipoDocumentos} from '../models';
+import {DocumentoRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 
-export class CartaController {
+export class DocumentoController {
   constructor(
-    @repository(CartaRepository)
-    public cartaRepository: CartaRepository,
+    @repository(DocumentoRepository)
+    public documentoRepository: DocumentoRepository,
   ) {}
 
-  @post('/cartas')
+  @post('/documentos')
   @response(200, {
-    description: 'Carta model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Carta)}},
+    description: 'Documento model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Documento)}},
   })
   @authenticate('jwt')
   @authorize({
@@ -43,52 +43,56 @@ export class CartaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Carta, {
-            title: 'NewCarta',
+          schema: getModelSchemaRef(Documento, {
+            title: 'NewDocumento',
             exclude: ['id'],
           }),
         },
       },
     })
-    carta: Omit<Carta, 'id'>,
-  ): Promise<Carta> {
-    const lastNumDoc = await this.cartaRepository.findOne({
+    documento: Omit<Documento, 'id'>,
+  ): Promise<Documento> {
+    const lastNumDoc = await this.documentoRepository.findOne({
       order: ['numDoc DESC'],
     });
-    carta.numDoc = lastNumDoc?.numDoc ? lastNumDoc.numDoc + 1 : 1;
-    return this.cartaRepository.create(carta);
+    documento.numDoc = lastNumDoc?.numDoc ? lastNumDoc.numDoc + 1 : 1;
+    return this.documentoRepository.create(documento);
   }
 
-  @get('/cartas/count')
+  @get('/documentos/count')
   @response(200, {
-    description: 'Carta model count',
+    description: 'Documento model count',
     content: {'application/json': {schema: CountSchema}},
   })
   @authenticate('jwt')
-  async count(@param.where(Carta) where?: Where<Carta>): Promise<Count> {
-    return this.cartaRepository.count(where);
+  async count(
+    @param.where(Documento) where?: Where<Documento>,
+  ): Promise<Count> {
+    return this.documentoRepository.count(where);
   }
 
-  @get('/cartas')
+  @get('/documentos')
   @response(200, {
-    description: 'Array of Carta model instances',
+    description: 'Array of Documento model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Carta, {includeRelations: true}),
+          items: getModelSchemaRef(Documento, {includeRelations: true}),
         },
       },
     },
   })
   @authenticate('jwt')
-  async find(@param.filter(Carta) filter?: Filter<Carta>): Promise<Carta[]> {
-    return this.cartaRepository.find(filter);
+  async find(
+    @param.filter(Documento) filter?: Filter<Documento>,
+  ): Promise<Documento[]> {
+    return this.documentoRepository.find(filter);
   }
 
-  @patch('/cartas')
+  @patch('/documentos')
   @response(200, {
-    description: 'Carta PATCH success count',
+    description: 'Documento PATCH success count',
     content: {'application/json': {schema: CountSchema}},
   })
   @authenticate('jwt')
@@ -100,37 +104,37 @@ export class CartaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Carta, {partial: true}),
+          schema: getModelSchemaRef(Documento, {partial: true}),
         },
       },
     })
-    carta: Carta,
-    @param.where(Carta) where?: Where<Carta>,
+    documento: Documento,
+    @param.where(Documento) where?: Where<Documento>,
   ): Promise<Count> {
-    return this.cartaRepository.updateAll(carta, where);
+    return this.documentoRepository.updateAll(documento, where);
   }
 
-  @get('/cartas/{id}')
+  @get('/documentos/{id}')
   @response(200, {
-    description: 'Carta model instance',
+    description: 'Documento model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Carta, {includeRelations: true}),
+        schema: getModelSchemaRef(Documento, {includeRelations: true}),
       },
     },
   })
   @authenticate('jwt')
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Carta, {exclude: 'where'})
-    filter?: FilterExcludingWhere<Carta>,
-  ): Promise<Carta> {
-    return this.cartaRepository.findById(id, filter);
+    @param.filter(Documento, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Documento>,
+  ): Promise<Documento> {
+    return this.documentoRepository.findById(id, filter);
   }
 
-  @patch('/cartas/{id}')
+  @patch('/documentos/{id}')
   @response(204, {
-    description: 'Carta PATCH success',
+    description: 'Documento PATCH success',
   })
   @authenticate('jwt')
   @authorize({
@@ -142,18 +146,18 @@ export class CartaController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Carta, {partial: true}),
+          schema: getModelSchemaRef(Documento, {partial: true}),
         },
       },
     })
-    carta: Carta,
+    documento: Documento,
   ): Promise<void> {
-    await this.cartaRepository.updateById(id, carta);
+    await this.documentoRepository.updateById(id, documento);
   }
 
-  @del('/cartas/{id}')
+  @del('/documentos/{id}')
   @response(204, {
-    description: 'Carta DELETE success',
+    description: 'Documento DELETE success',
   })
   @authenticate('jwt')
   @authorize({
@@ -161,13 +165,13 @@ export class CartaController {
     voters: [basicAuthorization],
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.cartaRepository.deleteById(id);
+    await this.documentoRepository.deleteById(id);
   }
 
-  @get('/cartas/{id}/areas', {
+  @get('/documentos/{id}/areas', {
     responses: {
       '200': {
-        description: 'Array of Carta has many Area through CartaArea',
+        description: 'Array of Documento has many Area through DocumentoArea',
         content: {
           'application/json': {
             schema: {type: 'array', items: getModelSchemaRef(Area)},
@@ -181,32 +185,32 @@ export class CartaController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Area>,
   ): Promise<Area[]> {
-    return this.cartaRepository.areas(id).find(filter);
+    return this.documentoRepository.areas(id).find(filter);
   }
 
-  @get('/cartas/{id}/tipo-cartas', {
+  @get('/documentos/{id}/tipo-documentos', {
     responses: {
       '200': {
-        description: 'TipoCartas belonging to Carta',
+        description: 'TipoDocumentos belonging to Documento',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(TipoCartas)},
+            schema: {type: 'array', items: getModelSchemaRef(TipoDocumentos)},
           },
         },
       },
     },
   })
   @authenticate('jwt')
-  async getTipoCartas(
-    @param.path.number('id') id: typeof Carta.prototype.id,
-  ): Promise<TipoCartas> {
-    return this.cartaRepository.tipoCarta(id);
+  async getTipoDocumentos(
+    @param.path.number('id') id: typeof Documento.prototype.id,
+  ): Promise<TipoDocumentos> {
+    return this.documentoRepository.tipoDocumento(id);
   }
 
-  @get('/cartas/{id}/file', {
+  @get('/documentos/{id}/file', {
     responses: {
       '200': {
-        description: 'File belonging to Carta',
+        description: 'File belonging to Documento',
         content: {
           'application/json': {
             schema: {type: 'array', items: getModelSchemaRef(File)},
@@ -217,12 +221,12 @@ export class CartaController {
   })
   @authenticate('jwt')
   async getFile(
-    @param.path.number('id') id: typeof Carta.prototype.id,
+    @param.path.number('id') id: typeof Documento.prototype.id,
   ): Promise<File> {
-    return this.cartaRepository.file(id);
+    return this.documentoRepository.file(id);
   }
 
-  @post('/cartas/{id}/areas/links', {
+  @post('/documentos/{id}/areas/links', {
     responses: {
       '200': {
         description: 'crear relación con área',
@@ -242,7 +246,7 @@ export class CartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  async linkTipoCarta(
+  async linkTipoDocumento(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
@@ -255,14 +259,15 @@ export class CartaController {
     })
     data: ManyToMany,
   ): Promise<Array<number | undefined>> {
-    if (data.link) await this.cartaRepository.areas(id).link(data.relationId);
-    else await this.cartaRepository.areas(id).unlink(data.relationId);
+    if (data.link)
+      await this.documentoRepository.areas(id).link(data.relationId);
+    else await this.documentoRepository.areas(id).unlink(data.relationId);
     return (
-      await this.cartaRepository.areas(id).find({fields: {id: true}})
+      await this.documentoRepository.areas(id).find({fields: {id: true}})
     ).map(c => c.id);
   }
 
-  @get('/cartas/{id}/areas/links', {
+  @get('/documentos/{id}/areas/links', {
     responses: {
       '200': {
         description: 'lista ids relacionados areas',
@@ -278,11 +283,11 @@ export class CartaController {
     },
   })
   @authenticate('jwt')
-  async getLinkTipoCarta(
+  async getLinkTipoDocumento(
     @param.path.number('id') id: number,
   ): Promise<Array<number | undefined>> {
     return (
-      await this.cartaRepository.areas(id).find({fields: {id: true}})
+      await this.documentoRepository.areas(id).find({fields: {id: true}})
     ).map(a => a.id);
   }
 }

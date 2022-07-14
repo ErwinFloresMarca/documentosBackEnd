@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "0.0.1",
-  "description": "backend cartas",
+  "description": "backend documentos",
   "keywords": [
     "loopback-application",
     "loopback"

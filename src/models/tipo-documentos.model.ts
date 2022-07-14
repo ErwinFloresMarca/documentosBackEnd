@@ -1,12 +1,12 @@
 import {hasMany, model, property} from '@loopback/repository';
-import {AreaTipoCarta} from './area-tipo-carta.model';
+import {AreaTipoDocumento} from './area-tipo-documento.model';
 import {Area, AreaWithRelations} from './area.model';
 import {Campo, CampoWithRelations} from './campo.model';
 import {TimeStamp} from './time-stamp.model';
-import {TipoCartaCampo} from './tipo-carta-campo.model';
+import {TipoDocumentoCampo} from './tipo-documento-campo.model';
 
 @model()
-export class TipoCartas extends TimeStamp {
+export class TipoDocumentos extends TimeStamp {
   @property({
     type: 'number',
     id: true,
@@ -20,21 +20,22 @@ export class TipoCartas extends TimeStamp {
   })
   nombre: string;
 
-  @hasMany(() => Campo, {through: {model: () => TipoCartaCampo}})
+  @hasMany(() => Campo, {through: {model: () => TipoDocumentoCampo}})
   campos: Campo[];
 
-  @hasMany(() => Area, {through: {model: () => AreaTipoCarta}})
+  @hasMany(() => Area, {through: {model: () => AreaTipoDocumento}})
   areas: Area[];
 
-  constructor(data?: Partial<TipoCartas>) {
+  constructor(data?: Partial<TipoDocumentos>) {
     super(data);
   }
 }
 
-export interface TipoCartasRelations {
+export interface TipoDocumentosRelations {
   // describe navigational properties here
   campos?: CampoWithRelations[];
   areas?: AreaWithRelations[];
 }
 
-export type TipoCartasWithRelations = TipoCartas & TipoCartasRelations;
+export type TipoDocumentosWithRelations = TipoDocumentos &
+  TipoDocumentosRelations;

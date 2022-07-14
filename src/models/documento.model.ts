@@ -1,13 +1,19 @@
 import {belongsTo, hasMany, model, property} from '@loopback/repository';
 import {Area, AreaWithRelations} from './area.model';
-import {CartaArea} from './carta-area.model';
-import {CartaEvento, CartaEventoWithRelations} from './carta-evento.model';
+import {DocumentoArea} from './documento-area.model';
+import {
+  DocumentoEvento,
+  DocumentoEventoWithRelations,
+} from './documento-evento.model';
 import {File, FileWithRelations} from './file.model';
 import {TimeStamp} from './time-stamp.model';
-import {TipoCartas, TipoCartasWithRelations} from './tipo-cartas.model';
+import {
+  TipoDocumentos,
+  TipoDocumentosWithRelations,
+} from './tipo-documentos.model';
 
 @model()
-export class Carta extends TimeStamp {
+export class Documento extends TimeStamp {
   @property({
     type: 'number',
     id: true,
@@ -37,34 +43,34 @@ export class Carta extends TimeStamp {
   })
   campos: object;
 
-  @belongsTo(() => TipoCartas, {name: 'tipoCarta'})
-  tipoCartasId: number;
+  @belongsTo(() => TipoDocumentos, {name: 'tipoDocumento'})
+  tipoDocumentosId: number;
 
   @belongsTo(() => File)
   fileId: number;
 
-  @hasMany(() => Area, {through: {model: () => CartaArea}})
+  @hasMany(() => Area, {through: {model: () => DocumentoArea}})
   areas: Area[];
 
-  @hasMany(() => CartaEvento)
-  cartaEventos: CartaEvento[];
+  @hasMany(() => DocumentoEvento)
+  documentoEventos: DocumentoEvento[];
   // Define well-known properties here
 
   // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<Carta>) {
+  constructor(data?: Partial<Documento>) {
     super(data);
   }
 }
 
-export interface CartaRelations {
+export interface DocumentoRelations {
   // describe navigational properties here
-  tipoCarta?: TipoCartasWithRelations;
+  tipoDocumento?: TipoDocumentosWithRelations;
   file?: FileWithRelations;
   areas?: AreaWithRelations[];
-  cartaEventos?: CartaEventoWithRelations[];
+  documentoEventos?: DocumentoEventoWithRelations[];
 }
 
-export type CartaWithRelations = Carta & CartaRelations;
+export type DocumentoWithRelations = Documento & DocumentoRelations;

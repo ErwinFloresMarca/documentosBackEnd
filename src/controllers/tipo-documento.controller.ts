@@ -19,14 +19,14 @@ import {
   response,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Area, Campo, ManyToMany, TipoCartas} from '../models';
-import {TipoCartasRepository} from '../repositories';
+import {Area, Campo, ManyToMany, TipoDocumentos} from '../models';
+import {TipoDocumentosRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 
-export class TipoCartaController {
+export class TipoDocumentoController {
   constructor(
-    @repository(TipoCartasRepository)
-    public tipoCartasRepository: TipoCartasRepository,
+    @repository(TipoDocumentosRepository)
+    public tipoDocumentosRepository: TipoDocumentosRepository,
   ) {}
 
   @authenticate('jwt')
@@ -34,74 +34,74 @@ export class TipoCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @post('/tipo-cartas')
+  @post('/tipo-documentos')
   @response(200, {
-    description: 'TipoCartas model instance',
-    content: {'application/json': {schema: getModelSchemaRef(TipoCartas)}},
+    description: 'TipoDocumentos model instance',
+    content: {'application/json': {schema: getModelSchemaRef(TipoDocumentos)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(TipoCartas, {
-            title: 'NewTipoCartas',
+          schema: getModelSchemaRef(TipoDocumentos, {
+            title: 'NewTipoDocumentos',
             exclude: ['id'],
           }),
         },
       },
     })
-    tipoCartas: Omit<TipoCartas, 'id'>,
-  ): Promise<TipoCartas> {
-    return this.tipoCartasRepository.create(tipoCartas);
+    tipoDocumentos: Omit<TipoDocumentos, 'id'>,
+  ): Promise<TipoDocumentos> {
+    return this.tipoDocumentosRepository.create(tipoDocumentos);
   }
 
   @authenticate('jwt')
-  @get('/tipo-cartas/count')
+  @get('/tipo-documentos/count')
   @response(200, {
-    description: 'TipoCartas model count',
+    description: 'TipoDocumentos model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(TipoCartas) where?: Where<TipoCartas>,
+    @param.where(TipoDocumentos) where?: Where<TipoDocumentos>,
   ): Promise<Count> {
-    return this.tipoCartasRepository.count(where);
+    return this.tipoDocumentosRepository.count(where);
   }
 
   @authenticate('jwt')
-  @get('/tipo-cartas')
+  @get('/tipo-documentos')
   @response(200, {
-    description: 'Array of TipoCartas model instances',
+    description: 'Array of TipoDocumentos model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(TipoCartas, {includeRelations: true}),
+          items: getModelSchemaRef(TipoDocumentos, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(TipoCartas) filter?: Filter<TipoCartas>,
-  ): Promise<TipoCartas[]> {
-    return this.tipoCartasRepository.find(filter);
+    @param.filter(TipoDocumentos) filter?: Filter<TipoDocumentos>,
+  ): Promise<TipoDocumentos[]> {
+    return this.tipoDocumentosRepository.find(filter);
   }
 
   @authenticate('jwt')
-  @get('/tipo-cartas/{id}')
+  @get('/tipo-documentos/{id}')
   @response(200, {
-    description: 'TipoCartas model instance',
+    description: 'TipoDocumentos model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(TipoCartas, {includeRelations: true}),
+        schema: getModelSchemaRef(TipoDocumentos, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(TipoCartas, {exclude: 'where'})
-    filter?: FilterExcludingWhere<TipoCartas>,
-  ): Promise<TipoCartas> {
-    return this.tipoCartasRepository.findById(id, filter);
+    @param.filter(TipoDocumentos, {exclude: 'where'})
+    filter?: FilterExcludingWhere<TipoDocumentos>,
+  ): Promise<TipoDocumentos> {
+    return this.tipoDocumentosRepository.findById(id, filter);
   }
 
   @authenticate('jwt')
@@ -109,23 +109,23 @@ export class TipoCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @patch('/tipo-cartas/{id}')
+  @patch('/tipo-documentos/{id}')
   @response(204, {
-    description: 'TipoCartas PATCH success',
+    description: 'TipoDocumentos PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(TipoCartas, {partial: true}),
+          schema: getModelSchemaRef(TipoDocumentos, {partial: true}),
         },
       },
     })
-    tipoCartas: TipoCartas,
+    tipoDocumentos: TipoDocumentos,
   ): Promise<void> {
-    tipoCartas.updatedAt = new Date().toISOString();
-    await this.tipoCartasRepository.updateById(id, tipoCartas);
+    tipoDocumentos.updatedAt = new Date().toISOString();
+    await this.tipoDocumentosRepository.updateById(id, tipoDocumentos);
   }
 
   @authenticate('jwt')
@@ -133,20 +133,20 @@ export class TipoCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  @del('/tipo-cartas/{id}')
+  @del('/tipo-documentos/{id}')
   @response(204, {
-    description: 'TipoCartas DELETE success',
+    description: 'TipoDocumentos DELETE success',
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.tipoCartasRepository.deleteById(id);
+    await this.tipoDocumentosRepository.deleteById(id);
   }
 
   // relación campos
-  @get('/tipo-cartas/{id}/campos', {
+  @get('/tipo-documentos/{id}/campos', {
     responses: {
       '200': {
         description:
-          'Array of TipoCartas has many Campo through TipoCartaCampo',
+          'Array of TipoDocumentos has many Campo through TipoDocumentoCampo',
         content: {
           'application/json': {
             schema: {type: 'array', items: getModelSchemaRef(Campo)},
@@ -159,10 +159,10 @@ export class TipoCartaController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Campo>,
   ): Promise<Campo[]> {
-    return this.tipoCartasRepository.campos(id).find(filter);
+    return this.tipoDocumentosRepository.campos(id).find(filter);
   }
 
-  @post('/tipo-cartas/{id}/campos', {
+  @post('/tipo-documentos/{id}/campos', {
     responses: {
       '200': {
         description: 'create a Campo model instance',
@@ -171,12 +171,12 @@ export class TipoCartaController {
     },
   })
   async createCampo(
-    @param.path.number('id') id: typeof TipoCartas.prototype.id,
+    @param.path.number('id') id: typeof TipoDocumentos.prototype.id,
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(Campo, {
-            title: 'NewCampoInTipoCartas',
+            title: 'NewCampoInTipoDocumentos',
             exclude: ['id'],
           }),
         },
@@ -184,10 +184,10 @@ export class TipoCartaController {
     })
     campo: Omit<Campo, 'id'>,
   ): Promise<Campo> {
-    return this.tipoCartasRepository.campos(id).create(campo);
+    return this.tipoDocumentosRepository.campos(id).create(campo);
   }
 
-  @post('/tipo-cartas/{id}/campos/links', {
+  @post('/tipo-documentos/{id}/campos/links', {
     responses: {
       '200': {
         description: 'crear relación',
@@ -221,14 +221,14 @@ export class TipoCartaController {
     data: ManyToMany,
   ): Promise<Array<number | undefined>> {
     if (data.link)
-      await this.tipoCartasRepository.campos(id).link(data.relationId);
-    else await this.tipoCartasRepository.campos(id).unlink(data.relationId);
+      await this.tipoDocumentosRepository.campos(id).link(data.relationId);
+    else await this.tipoDocumentosRepository.campos(id).unlink(data.relationId);
     return (
-      await this.tipoCartasRepository.campos(id).find({fields: {id: true}})
+      await this.tipoDocumentosRepository.campos(id).find({fields: {id: true}})
     ).map(tp => tp.id);
   }
 
-  @get('/tipo-cartas/{id}/campos/links', {
+  @get('/tipo-documentos/{id}/campos/links', {
     responses: {
       '200': {
         description: 'lista ids relacionados campos',
@@ -248,15 +248,16 @@ export class TipoCartaController {
     @param.path.number('id') id: number,
   ): Promise<Array<number | undefined>> {
     return (
-      await this.tipoCartasRepository.campos(id).find({fields: {id: true}})
+      await this.tipoDocumentosRepository.campos(id).find({fields: {id: true}})
     ).map(c => c.id);
   }
 
   // realcion muchos a muchos con areas
-  @get('/tipo-cartas/{id}/areas', {
+  @get('/tipo-documentos/{id}/areas', {
     responses: {
       '200': {
-        description: 'Array of TipoCartas has many Area through AreaTipoCarta',
+        description:
+          'Array of TipoDocumentos has many Area through AreaTipoDocumento',
         content: {
           'application/json': {
             schema: {type: 'array', items: getModelSchemaRef(Area)},
@@ -270,10 +271,10 @@ export class TipoCartaController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Area>,
   ): Promise<Area[]> {
-    return this.tipoCartasRepository.areas(id).find(filter);
+    return this.tipoDocumentosRepository.areas(id).find(filter);
   }
 
-  @post('/tipo-cartas/{id}/areas/links', {
+  @post('/tipo-documentos/{id}/areas/links', {
     responses: {
       '200': {
         description: 'crear relación',
@@ -293,7 +294,7 @@ export class TipoCartaController {
     allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
     voters: [basicAuthorization],
   })
-  async linkTipoCarta(
+  async linkTipoDocumento(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
@@ -307,14 +308,14 @@ export class TipoCartaController {
     data: ManyToMany,
   ): Promise<Array<number | undefined>> {
     if (data.link)
-      await this.tipoCartasRepository.areas(id).link(data.relationId);
-    else await this.tipoCartasRepository.areas(id).unlink(data.relationId);
+      await this.tipoDocumentosRepository.areas(id).link(data.relationId);
+    else await this.tipoDocumentosRepository.areas(id).unlink(data.relationId);
     return (
-      await this.tipoCartasRepository.areas(id).find({fields: {id: true}})
+      await this.tipoDocumentosRepository.areas(id).find({fields: {id: true}})
     ).map(tp => tp.id);
   }
 
-  @get('/tipo-cartas/{id}/areas/links', {
+  @get('/tipo-documentos/{id}/areas/links', {
     responses: {
       '200': {
         description: 'lista ids relacionados areas',
@@ -330,11 +331,11 @@ export class TipoCartaController {
     },
   })
   @authenticate('jwt')
-  async getLinkTipoCarta(
+  async getLinkTipoDocumento(
     @param.path.number('id') id: number,
   ): Promise<Array<number | undefined>> {
     return (
-      await this.tipoCartasRepository.areas(id).find({fields: {id: true}})
+      await this.tipoDocumentosRepository.areas(id).find({fields: {id: true}})
     ).map(a => a.id);
   }
 }

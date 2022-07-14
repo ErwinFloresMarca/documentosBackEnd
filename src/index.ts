@@ -1,9 +1,9 @@
-import {ApplicationConfig, CartasAplication} from './application';
+import {ApplicationConfig, DocumentosAplication} from './application';
 
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new CartasAplication(options);
+  const app = new DocumentosAplication(options);
   await app.boot();
   await app.start();
 

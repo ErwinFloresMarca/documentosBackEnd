@@ -1,26 +1,47 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyThroughRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {
+  DefaultCrudRepository,
+  HasManyThroughRepositoryFactory,
+  repository,
+} from '@loopback/repository';
 import {MysqlDbDataSource} from '../datasources';
-import {Campo, CampoRelations, TipoCartas, TipoCartaCampo} from '../models';
-import {TipoCartaCampoRepository} from './tipo-carta-campo.repository';
-import {TipoCartasRepository} from './tipo-cartas.repository';
+import {
+  Campo,
+  CampoRelations,
+  TipoDocumentoCampo,
+  TipoDocumentos,
+} from '../models';
+import {TipoDocumentoCampoRepository} from './tipo-documento-campo.repository';
+import {TipoDocumentosRepository} from './tipo-documentos.repository';
 
 export class CampoRepository extends DefaultCrudRepository<
   Campo,
   typeof Campo.prototype.id,
   CampoRelations
 > {
-
-  public readonly tipoCartas: HasManyThroughRepositoryFactory<TipoCartas, typeof TipoCartas.prototype.id,
-          TipoCartaCampo,
-          typeof Campo.prototype.id
-        >;
+  public readonly tipoDocumentos: HasManyThroughRepositoryFactory<
+    TipoDocumentos,
+    typeof TipoDocumentos.prototype.id,
+    TipoDocumentoCampo,
+    typeof Campo.prototype.id
+  >;
 
   constructor(
-    @inject('datasources.mysqlDb') dataSource: MysqlDbDataSource, @repository.getter('TipoCartaCampoRepository') protected tipoCartaCampoRepositoryGetter: Getter<TipoCartaCampoRepository>, @repository.getter('TipoCartasRepository') protected tipoCartasRepositoryGetter: Getter<TipoCartasRepository>,
+    @inject('datasources.mysqlDb') dataSource: MysqlDbDataSource,
+    @repository.getter('TipoDocumentoCampoRepository')
+    protected tipoDocumentoCampoRepositoryGetter: Getter<TipoDocumentoCampoRepository>,
+    @repository.getter('TipoDocumentosRepository')
+    protected tipoDocumentosRepositoryGetter: Getter<TipoDocumentosRepository>,
   ) {
     super(Campo, dataSource);
-    this.tipoCartas = this.createHasManyThroughRepositoryFactoryFor('tipoCartas', tipoCartasRepositoryGetter, tipoCartaCampoRepositoryGetter,);
-    this.registerInclusionResolver('tipoCartas', this.tipoCartas.inclusionResolver);
+    this.tipoDocumentos = this.createHasManyThroughRepositoryFactoryFor(
+      'tipoDocumentos',
+      tipoDocumentosRepositoryGetter,
+      tipoDocumentoCampoRepositoryGetter,
+    );
+    this.registerInclusionResolver(
+      'tipoDocumentos',
+      this.tipoDocumentos.inclusionResolver,
+    );
   }
 }
