@@ -90,30 +90,6 @@ export class DocumentoController {
     return this.documentoRepository.find(filter);
   }
 
-  @patch('/documentos')
-  @response(200, {
-    description: 'Documento PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: [Roles.admin, Roles.secretario, Roles.director],
-    voters: [basicAuthorization],
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Documento, {partial: true}),
-        },
-      },
-    })
-    documento: Documento,
-    @param.where(Documento) where?: Where<Documento>,
-  ): Promise<Count> {
-    return this.documentoRepository.updateAll(documento, where);
-  }
-
   @get('/documentos/{id}')
   @response(200, {
     description: 'Documento model instance',

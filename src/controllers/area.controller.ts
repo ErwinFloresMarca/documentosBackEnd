@@ -20,13 +20,15 @@ import {
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
 import {Area, ManyToMany, Responsable, TipoDocumentos} from '../models';
-import {AreaRepository} from '../repositories';
+import {AreaRepository, AreaTipoDocumentoRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 
 export class AreaController {
   constructor(
     @repository(AreaRepository)
     public areaRepository: AreaRepository,
+    @repository(AreaTipoDocumentoRepository)
+    public areaTipoDocumentoRepository: AreaTipoDocumentoRepository,
   ) {}
 
   @authenticate('jwt')
@@ -62,6 +64,25 @@ export class AreaController {
     content: {'application/json': {schema: CountSchema}},
   })
   async count(@param.where(Area) where?: Where<Area>): Promise<Count> {
+    if (where) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const locWhere: any = {...where};
+      if (locWhere.tipoDocumentos) {
+        const whereATD = {
+          where: {tipoDocumentosId: locWhere.tipoDocumentos?.id},
+        };
+        const listOfAreaTipoDocumentos =
+          await this.areaTipoDocumentoRepository.find(whereATD);
+        const refactorWhere = {
+          ...locWhere,
+          id: {
+            inq: [...new Set(listOfAreaTipoDocumentos.map(atp => atp.areaId))],
+          },
+          tipoDocumentos: undefined,
+        };
+        Object.assign(where, refactorWhere);
+      }
+    }
     return this.areaRepository.count(where);
   }
 
@@ -78,7 +99,28 @@ export class AreaController {
       },
     },
   })
-  async find(@param.filter(Area) filter?: Filter<Area>): Promise<Area[]> {
+  async find(
+    @param.filter(Area)
+    filter?: Filter<Area>,
+  ): Promise<Area[]> {
+    if (filter?.where) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const where: any = {...filter.where};
+      if (where.tipoDocumentos) {
+        const whereATD = {
+          where: {tipoDocumentosId: where.tipoDocumentos?.id},
+        };
+        const listOfAreaTipoDocumentos =
+          await this.areaTipoDocumentoRepository.find(whereATD);
+        filter.where = {
+          ...filter.where,
+          id: {
+            inq: [...new Set(listOfAreaTipoDocumentos.map(atp => atp.areaId))],
+          },
+          tipoDocumentos: undefined,
+        };
+      }
+    }
     return this.areaRepository.find(filter);
   }
 

@@ -1,19 +1,33 @@
 import {inject} from '@loopback/core';
-import {BelongsToAccessor, DefaultCrudRepository} from '@loopback/repository';
+import {
+  AnyObject,
+  DataObject,
+  DefaultCrudRepository,
+} from '@loopback/repository';
 import {MysqlDbDataSource} from '../datasources';
-import {Area, DocumentoEvento, DocumentoEventoRelations} from '../models';
+import {DocumentoEvento, DocumentoEventoRelations} from '../models';
 
 export class DocumentoEventoRepository extends DefaultCrudRepository<
   DocumentoEvento,
   typeof DocumentoEvento.prototype.id,
   DocumentoEventoRelations
 > {
-  public readonly area: BelongsToAccessor<
-    Area,
-    typeof DocumentoEvento.prototype.id
-  >;
-
   constructor(@inject('datasources.mysqlDb') dataSource: MysqlDbDataSource) {
     super(DocumentoEvento, dataSource);
+  }
+
+  async create(
+    entity: DataObject<DocumentoEvento>,
+    options?: AnyObject | undefined,
+  ): Promise<DocumentoEvento> {
+    const resp = await this.create(entity, options);
+    if (resp) {
+      await this.dataSource.execute(
+        `UPDATE Documento SET updatedAt='${new Date()}' tipoUltimoEvento = '${
+          resp.tipoEvento
+        }' WHERE id = ${resp.documentoId}`,
+      );
+    }
+    return resp;
   }
 }

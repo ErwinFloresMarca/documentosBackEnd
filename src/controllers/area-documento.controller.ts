@@ -16,19 +16,35 @@ import {
   patch,
   post,
   requestBody,
+  response,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
 import {Area, Documento} from '../models';
-import {AreaRepository} from '../repositories';
+import {AreaRepository, DocumentoAreaRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 import {DocumentoRepository} from './../repositories/documento.repository';
 
 export class AreaDocumentoController {
   constructor(
     @repository(AreaRepository) protected areaRepository: AreaRepository,
+    @repository(DocumentoAreaRepository)
+    protected documentoAreaRepository: DocumentoAreaRepository,
     @repository(DocumentoRepository)
     protected documentoRepository: DocumentoRepository,
   ) {}
+
+  @authenticate('jwt')
+  @get('/areas/{id}/documentos/count')
+  @response(200, {
+    description: 'Documento model count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async count(
+    @param.path.number('id') id: number,
+    @param.where(Documento) where?: Where<Documento>,
+  ): Promise<Count> {
+    return this.documentoAreaRepository.count();
+  }
 
   @authenticate('jwt')
   @get('/areas/{id}/documentos', {

@@ -18,17 +18,17 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {basicAuthorization} from '../middlewares/auth.midd';
-import {Documento, DocumentoEvento} from '../models';
-import {DocumentoRepository} from '../repositories';
+import {DocumentoEvento} from '../models';
+import {DocumentoEventoRepository} from '../repositories';
 import Roles from '../utils/roles.util';
 
-export class DocumentoDocumentoEventoController {
+export class DocumentoEventoController {
   constructor(
-    @repository(DocumentoRepository)
-    protected documentoRepository: DocumentoRepository,
+    @repository(DocumentoEventoRepository)
+    protected documentoEventoRepository: DocumentoEventoRepository,
   ) {}
 
-  @get('/documentos/{id}/documento-eventos', {
+  @get('/documento-eventos', {
     responses: {
       '200': {
         description: 'Array of Documento has many DocumentoEvento',
@@ -42,13 +42,12 @@ export class DocumentoDocumentoEventoController {
   })
   @authenticate('jwt')
   async find(
-    @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<DocumentoEvento>,
   ): Promise<DocumentoEvento[]> {
-    return this.documentoRepository.documentoEventos(id).find(filter);
+    return this.documentoEventoRepository.find(filter);
   }
 
-  @post('/documentos/{id}/documento-eventos', {
+  @post('/documento-eventos', {
     responses: {
       '200': {
         description: 'Documento model instance',
@@ -60,7 +59,6 @@ export class DocumentoDocumentoEventoController {
   })
   @authenticate('jwt')
   async create(
-    @param.path.number('id') id: typeof Documento.prototype.id,
     @requestBody({
       content: {
         'application/json': {
@@ -74,12 +72,10 @@ export class DocumentoDocumentoEventoController {
     })
     documentoEvento: Omit<DocumentoEvento, 'id'>,
   ): Promise<DocumentoEvento> {
-    return this.documentoRepository
-      .documentoEventos(id)
-      .create(documentoEvento);
+    return this.documentoEventoRepository.create(documentoEvento);
   }
 
-  @patch('/documentos/{id}/documento-eventos', {
+  @patch('/documento-eventos', {
     responses: {
       '200': {
         description: 'Documento.DocumentoEvento PATCH success count',
@@ -93,7 +89,6 @@ export class DocumentoDocumentoEventoController {
     voters: [basicAuthorization],
   })
   async patch(
-    @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
@@ -105,12 +100,10 @@ export class DocumentoDocumentoEventoController {
     @param.query.object('where', getWhereSchemaFor(DocumentoEvento))
     where?: Where<DocumentoEvento>,
   ): Promise<Count> {
-    return this.documentoRepository
-      .documentoEventos(id)
-      .patch(documentoEvento, where);
+    return this.documentoEventoRepository.updateAll(documentoEvento, where);
   }
 
-  @del('/documentos/{id}/documento-eventos', {
+  @del('/documento-eventos', {
     responses: {
       '200': {
         description: 'Documento.DocumentoEvento DELETE success count',
@@ -124,10 +117,9 @@ export class DocumentoDocumentoEventoController {
     voters: [basicAuthorization],
   })
   async delete(
-    @param.path.number('id') id: number,
     @param.query.object('where', getWhereSchemaFor(DocumentoEvento))
     where?: Where<DocumentoEvento>,
   ): Promise<Count> {
-    return this.documentoRepository.documentoEventos(id).delete(where);
+    return this.documentoEventoRepository.deleteAll(where);
   }
 }

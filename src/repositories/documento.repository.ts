@@ -46,6 +46,11 @@ export class DocumentoRepository extends DefaultCrudRepository<
     typeof Documento.prototype.id
   >;
 
+  public readonly ultimoEvento: BelongsToAccessor<
+    DocumentoEvento,
+    typeof Documento.prototype.id
+  >;
+
   constructor(
     @inject('datasources.mysqlDb') dataSource: MysqlDbDataSource,
     @repository.getter('TipoDocumentosRepository')
@@ -60,6 +65,14 @@ export class DocumentoRepository extends DefaultCrudRepository<
     protected documentoEventoRepositoryGetter: Getter<DocumentoEventoRepository>,
   ) {
     super(Documento, dataSource);
+    this.ultimoEvento = this.createBelongsToAccessorFor(
+      'ultimoEvento',
+      documentoEventoRepositoryGetter,
+    );
+    this.registerInclusionResolver(
+      'ultimoEvento',
+      this.ultimoEvento.inclusionResolver,
+    );
     this.documentoEventos = this.createHasManyRepositoryFactoryFor(
       'documentoEventos',
       documentoEventoRepositoryGetter,

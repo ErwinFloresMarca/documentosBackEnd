@@ -27,11 +27,6 @@ export class Documento extends TimeStamp {
   numDoc?: number;
 
   @property({
-    type: 'string',
-  })
-  solicitante?: string;
-
-  @property({
     type: 'date',
     required: true,
   })
@@ -54,6 +49,9 @@ export class Documento extends TimeStamp {
 
   @hasMany(() => DocumentoEvento)
   documentoEventos: DocumentoEvento[];
+
+  @belongsTo(() => DocumentoEvento, {name: 'ultimoEvento'})
+  tipoUltimoEvento: string;
   // Define well-known properties here
 
   // Indexer property to allow additional data
@@ -71,6 +69,7 @@ export interface DocumentoRelations {
   file?: FileWithRelations;
   areas?: AreaWithRelations[];
   documentoEventos?: DocumentoEventoWithRelations[];
+  ultimoEvento?: DocumentoEventoWithRelations;
 }
 
 export type DocumentoWithRelations = Documento & DocumentoRelations;

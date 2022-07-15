@@ -61,11 +61,12 @@ export class UsuarioController {
     description: 'Usuario model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: [Roles.admin],
-    voters: [basicAuthorization],
-  })
+  // TODO: proteccion de cantidad de usuarios registrados
+  // @authenticate('jwt')
+  // @authorize({
+  //   allowedRoles: [Roles.admin],
+  //   voters: [basicAuthorization],
+  // })
   async count(@param.where(Usuario) where?: Where<Usuario>): Promise<Count> {
     return this.usuarioRepository.count(where);
   }
