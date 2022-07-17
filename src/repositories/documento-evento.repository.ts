@@ -28,7 +28,7 @@ export class DocumentoEventoRepository extends DefaultCrudRepository<
           .split('.')[0]
           .replace('T', ' ')}', tipoUltimoEvento = '${
           resp.tipoEvento
-        }' WHERE id = ${resp.documentoId}`,
+        }', ultimoEventoId = ${resp.id} WHERE id = ${resp.documentoId}`,
       );
     }
     return resp;

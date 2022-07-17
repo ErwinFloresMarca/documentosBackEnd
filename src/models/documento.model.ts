@@ -50,8 +50,16 @@ export class Documento extends TimeStamp {
   @hasMany(() => DocumentoEvento)
   documentoEventos: DocumentoEvento[];
 
-  @belongsTo(() => DocumentoEvento, {name: 'ultimoEvento'})
+  @property({
+    type: 'string',
+  })
   tipoUltimoEvento: string;
+
+  @belongsTo(() => DocumentoEvento, {
+    name: 'ultimoEvento',
+    keyFrom: 'ultimoEventoId',
+  })
+  ultimoEventoId: number;
   // Define well-known properties here
 
   // Indexer property to allow additional data
