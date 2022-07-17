@@ -60,7 +60,7 @@ export class AreaDocumentoController {
     @param.path.number('id') id: number,
     @param.where(Documento) where?: Where<Documento>,
   ): Promise<Count> {
-    let conditions = `da.areaId = ${id}`;
+    let conditions = '';
     if (where) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const lw: any = {...where};
@@ -101,7 +101,9 @@ export class AreaDocumentoController {
         conditions += ` and ${condition}`;
       });
     }
-    const queryString = `SELECT count(*) as count FROM DocumentoArea as da, Documento as d WHERE da.documentoId = d.id and ${conditions}`;
+    const queryString = `SELECT count(*) as count FROM Documento as d WHERE d.id IN (SELECT documentoId from  DocumentoArea WHERE areaId = ${id})${
+      conditions ? `${conditions}` : ''
+    }`;
     // console.log('query sql: ', queryString);
     const resp = await this.areaRepository.execute(queryString);
     return resp[0];
@@ -124,7 +126,7 @@ export class AreaDocumentoController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Documento>,
   ): Promise<Documento[]> {
-    let conditions = `da.areaId = ${id}`;
+    let conditions = ``;
     if (filter?.where) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const lw: any = {...filter.where};
@@ -164,7 +166,9 @@ export class AreaDocumentoController {
         conditions += ` and ${condition}`;
       });
     }
-    let queryString = `SELECT d.id FROM DocumentoArea as da, Documento as d WHERE da.documentoId = d.id and ${conditions}`;
+    let queryString = `SELECT d.id FROM Documento as d WHERE d.id IN (SELECT documentoId from  DocumentoArea WHERE areaId = ${id})${
+      conditions ? `${conditions}` : ''
+    }`;
     // order
     if (filter?.order) {
       queryString += ` ORDER BY ${filter?.order}`;
