@@ -336,7 +336,23 @@ export class UsuarioController {
     const token = await this.jwtService.generateToken(userProfile);
     return {
       token,
-      usuario: user,
+      usuario: await this.usuarioRepository.findById(user.id, {
+        include: [
+          {
+            relation: 'responsables',
+            scope: {
+              where: {
+                estado: true,
+              },
+              include: [
+                {
+                  relation: 'area',
+                },
+              ],
+            },
+          },
+        ],
+      }),
     };
   }
 
