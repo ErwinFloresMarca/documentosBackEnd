@@ -59,10 +59,13 @@
     "@loopback/rest-explorer": "^5.0.0",
     "@loopback/service-proxy": "^5.0.0",
     "@types/bcryptjs": "^2.4.2",
+    "@types/luxon": "^3.0.0",
     "@types/uuid": "^8.3.4",
     "bcryptjs": "^2.4.3",
+    "exceljs": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-mysql": "^5.4.4",
+    "luxon": "^3.0.1",
     "multer": "^1.4.5-lts.1",
     "tslib": "^2.0.0",
     "uuid": "^8.3.2"

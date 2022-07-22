@@ -24,7 +24,12 @@ import {
   UserServiceBindings,
 } from './keys';
 import {MySequence} from './sequence';
-import {BcryptHasher, JWTService, MyUserService} from './services';
+import {
+  BcryptHasher,
+  ExcelService,
+  JWTService,
+  MyUserService,
+} from './services';
 import {SECURITY_SCHEME_SPEC, SECURITY_SPEC} from './utils/security-spec';
 
 // uuid para nombres de archivos
@@ -51,6 +56,8 @@ export class DocumentosAplication extends BootMixin(
     this.add(createBindingFromClass(JWTAuthenticationStrategy));
     registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
     //End add Autentication Strategies
+
+    this.service(ExcelService);
 
     // this.setUpBindings();
     // Set up the custom sequence
