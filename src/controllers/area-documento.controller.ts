@@ -2,7 +2,7 @@ import {Campo} from './../models/campo.model';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {authenticate} from '@loopback/authentication';
 import {authorize} from '@loopback/authorization';
-import {service} from '@loopback/core';
+import {inject, service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -15,12 +15,17 @@ import {
   get,
   getModelSchemaRef,
   getWhereSchemaFor,
+  oas,
   param,
   patch,
   post,
   requestBody,
   response,
+  Response,
+  RestBindings,
 } from '@loopback/rest';
+import {Workbook} from 'exceljs';
+import {DateTime} from 'luxon';
 import {basicAuthorization} from '../middlewares/auth.midd';
 import {Documento} from '../models';
 import {AreaRepository, DocumentoAreaRepository} from '../repositories';
@@ -206,22 +211,13 @@ export class AreaDocumentoController {
   }
 
   // @authenticate('jwt')
-  @get('/areas/{id}/documentos/report', {
-    responses: {
-      '200': {
-        description: 'Download excel doc report',
-        content: {
-          'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Documento)},
-          },
-        },
-      },
-    },
-  })
+  @get('/areas/{id}/documentos/report')
+  @oas.response.file()
   async generateReport(
+    @inject(RestBindings.Http.RESPONSE) reqResp: Response,
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Documento>,
-  ): Promise<Documento[]> {
+  ) {
     let conditions = ``;
     if (filter?.where) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -262,7 +258,7 @@ export class AreaDocumentoController {
         conditions += ` and ${condition}`;
       });
     }
-    let queryString = `SELECT d.id FROM Documento as d WHERE d.id IN (SELECT documentoId from  DocumentoArea WHERE areaId = ${id})${
+    let queryString = `SELECT d.* FROM Documento as d WHERE d.id IN (SELECT documentoId from  DocumentoArea WHERE areaId = ${id})${
       conditions ? `${conditions}` : ''
     }`;
     // order
@@ -280,25 +276,29 @@ export class AreaDocumentoController {
     }>;
     // map result
     // include relations
+    const documentIds = resp.map(doc => doc.id);
+
+    const docs = await this.documentoRepository.find({
+      where: {
+        id: {inq: documentIds},
+      },
+      include: [
+        {
+          relation: 'documentoEventos',
+          scope: {
+            order: ['createdAt ASC'],
+          },
+        },
+      ],
+    });
     const documentos: Array<Documento & DocumentoWithRelations> = [];
-    for (const doc of resp) {
-      documentos.push(
-        await this.documentoRepository.findById(doc.id, {
-          include: [
-            {
-              relation: 'documentoEventos',
-              scope: {
-                where: {
-                  tipoEvento: 'DESIGNADO',
-                },
-              },
-            },
-          ],
-        }),
-      );
-    }
+    documentIds.forEach(dId => {
+      const docData = docs.find(dobj => dobj.id === dId);
+      if (docData) {
+        documentos.push(docData);
+      }
+    });
     const lw: any = {...filter?.where};
-    let respTP: any = undefined;
     if (lw.tipoDocumentosId) {
       const campos: Array<Campo> = await this.tipoDocumentoRepository
         .campos(lw.tipoDocumentosId)
@@ -323,12 +323,27 @@ export class AreaDocumentoController {
           ],
         },
       );
-      respTP = await this.excelService.generateExcel(
+      const wb: Workbook = await this.excelService.generateExcel(
         this.excelService.generateDocColumns(campos),
         this.excelService.generateDocRows(documentos, area),
       );
+      reqResp.contentType('application/vnd.ms-excel');
+      reqResp.attachment(
+        `reporte-${area.nombre}_${DateTime.now().toFormat('yyyy-LL-dd')}.xlsx`,
+      );
+      await wb.xlsx
+        .write(reqResp, {
+          filename: `reporte-${area.nombre}_${DateTime.now().toFormat(
+            'yyyy-LL-dd',
+          )}.xlsx`,
+        })
+        .catch(err => {
+          console.log('error report: ', err);
+          reqResp.status(500).json({message: 'error al generar excel'});
+        });
+      reqResp.end();
     }
-    return respTP;
+    return reqResp.send();
   }
 
   @authenticate('jwt')
