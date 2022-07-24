@@ -1,4 +1,6 @@
 import {ApplicationConfig, DocumentosAplication} from './application';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const dotenv = require('dotenv').config();
 
 export * from './application';
 

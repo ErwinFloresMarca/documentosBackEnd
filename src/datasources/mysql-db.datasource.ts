@@ -1,10 +1,13 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const dotenv = require('dotenv').config();
+
 const config = {
   name: 'mysqlDb',
   connector: 'mysql',
-  url: 'mysql://root:mariadbpw@localhost:49153/documentos',
+  url: process.env.DB_URL ? process.env.DB_URL : '',
   host: '',
   port: 0,
   user: '',
