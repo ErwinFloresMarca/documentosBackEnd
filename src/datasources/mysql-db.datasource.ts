@@ -5,7 +5,7 @@ import {juggler} from '@loopback/repository';
 const dotenv = require('dotenv').config();
 
 console.log('db url: ', process.env.DB_URL);
-
+console.log(process.env);
 const config = {
   name: 'mysqlDb',
   connector: 'mysql',
