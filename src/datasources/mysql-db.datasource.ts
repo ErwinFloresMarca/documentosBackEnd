@@ -4,6 +4,8 @@ import {juggler} from '@loopback/repository';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const dotenv = require('dotenv').config();
 
+console.log('db url: ', process.env.DB_URL);
+
 const config = {
   name: 'mysqlDb',
   connector: 'mysql',
